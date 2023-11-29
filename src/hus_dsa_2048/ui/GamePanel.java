@@ -4,6 +4,7 @@ import hus_dsa_2048.game.Game;
 import hus_dsa_2048.input.Keyboard;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
@@ -11,10 +12,9 @@ import java.awt.image.DataBufferInt;
 
 public class GamePanel extends Canvas implements Runnable {
     public static final int WIDTH = 400, HEIGHT = 400;
-    public static float scale = 2.0f;
+    public static float scale = 1.6f;
 
     public JFrame frame;
-
     public JLabel label;
     public Thread thread;
     public Keyboard key;
@@ -24,12 +24,42 @@ public class GamePanel extends Canvas implements Runnable {
     public static BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
     public static int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
     public GamePanel() {
         setPreferredSize(new Dimension((int) (HEIGHT * scale), (int) (WIDTH * scale)));
         frame = new JFrame();
         game = new Game();
         key = new Keyboard();
         addKeyListener(key);
+
+
+        label = new JLabel("Total: " + game.getTotal());
+        label.setFont(new Font("Verdana", Font.PLAIN, 30));
+        label.setForeground(Color.YELLOW);
+
+        JPanel panel = new JPanel();
+        panel.add(label);
+        panel.setBackground(Color.PINK);
+
+        frame.add(panel, BorderLayout.NORTH);
+        frame.add(this);
+
+
+        frame.setResizable(false);
+        frame.setTitle("hus_dsa_2048");
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+        start();
+
+    }
+
+    public void updateTotalLabel() {
+        label.setText("Total: " + game.getTotal());
     }
 
     public void start() {
@@ -52,7 +82,6 @@ public class GamePanel extends Canvas implements Runnable {
             updateToPerform += (currentTime - lastTime) / nanoSecondUpdater;
             if (updateToPerform >= 1) {
                 update();
-                System.out.println(game.getTotal());
                 updates++;
                 updateToPerform--;
             }
@@ -98,14 +127,7 @@ public class GamePanel extends Canvas implements Runnable {
 
     public static void main(String[] args) {
         GamePanel panel = new GamePanel();
-        panel.frame.setResizable(false);
-        panel.frame.setTitle("hus_dsa_2048");
-        panel.frame.add(panel);
-        panel.frame.pack();
-        panel.frame.setVisible(true);
-        panel.frame.setLocationRelativeTo(null);
-        panel.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        panel.frame.setAlwaysOnTop(true);
-        panel.start();
+        Game game = new Game(panel);
+        panel.setGame(game);
     }
 }

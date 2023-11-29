@@ -12,12 +12,17 @@ import java.util.List;
 import java.util.Random;
 
 public class Game {
-
+    private GamePanel gamePanel;
     public static List<NumberObject> numbers;
     public static boolean moving = false, hasMoved = true, sthMoving = false;
     public static int dir = 0;
     public static int total = 0;
     private final Random random = new Random();
+
+    public Game(GamePanel gamePanel) {
+        this.gamePanel = gamePanel;
+    }
+
 
     public Game() {
         init();
@@ -40,6 +45,7 @@ public class Game {
         }
         checkForValueIncrease();
         movingLogic();
+        gamePanel.updateTotalLabel();
     }
 
     public int getTotal() {
